@@ -3423,7 +3423,7 @@ do
 
         local Window = {
             Name = Data.Name or Data.name or "Window",
-            Logo = Data.Logo or Data.logo or "90363697817722",
+            Logo = Data.Logo or Data.logo or "79243957331195",
             
             Pages = { },
             Items = { },
