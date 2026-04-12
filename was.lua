@@ -2268,7 +2268,7 @@ do
                 Parent = Library.Holder.Instance,
                 Name = "\0",
                 AnchorPoint = Vector2New(0.5, 0),
-                Position = UDim2New(0.5, 0, 0, 25),
+                Position = UDim2New(0.5, 0, 0, 6),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Size = UDim2New(0, 0, 0, 34),
                 BorderSizePixel = 2,
