@@ -1667,7 +1667,9 @@ do
         }
 
         local KeyListItem 
-        if Library.KeyList then 
+        if Data.KeybindList then 
+            KeyListItem = Data.KeybindList:Add("", "")
+        elseif Library.KeyList then 
             KeyListItem = Library.KeyList:Add("", "")
         end
 
