@@ -2306,6 +2306,7 @@ do
                 Transparency = NumSequence{NumSequenceKeypoint(0, 0), NumSequenceKeypoint(0.696, 0.2749999761581421), NumSequenceKeypoint(0.84, 0.574999988079071), NumSequenceKeypoint(1, 1)}
             })
             
+            -- small glow behind the logo only (removed full-width line)
             Items["Glow"] = Instances:Create("ImageLabel", {
                 Parent = Items["Watermark"].Instance,
                 Name = "\0",
@@ -2314,11 +2315,11 @@ do
                 ImageTransparency = 0.5,
                 BorderColor3 = FromRGB(0, 0, 0),
                 BackgroundColor3 = FromRGB(255, 255, 255),
-                Size = UDim2New(1, 0, 1, 0),
+                Size = UDim2New(0, 22, 0, 22),
                 AnchorPoint = Vector2New(0.5, 0.5),
                 Image = "rbxassetid://18245826428",
                 BackgroundTransparency = 1,
-                Position = UDim2New(0.5, 0, 0.5, 0),
+                Position = UDim2New(0, 0, 0.5, 0),
                 ZIndex = 4,
                 BorderSizePixel = 0,
                 SliceCenter = RectNew(Vector2New(21, 21), Vector2New(79, 79))
@@ -2368,7 +2369,8 @@ do
                 ZIndex = 5,
                 AutomaticSize = Enum.AutomaticSize.X,
                 TextSize = 14,
-                BackgroundColor3 = FromRGB(255, 255, 255)
+                BackgroundColor3 = FromRGB(255, 255, 255),
+                TextXAlignment = Enum.TextXAlignment.Center
             })  Items["Text"]:AddToTheme({TextColor3 = "Text"})
 
             Items["Info"] = Instances:Create("TextLabel", {
@@ -2385,7 +2387,8 @@ do
                 ZIndex = 5,
                 AutomaticSize = Enum.AutomaticSize.X,
                 TextSize = 14,
-                BackgroundColor3 = FromRGB(255, 255, 255)
+                BackgroundColor3 = FromRGB(255, 255, 255),
+                TextXAlignment = Enum.TextXAlignment.Center
             })  Items["Info"]:AddToTheme({TextColor3 = "Text"})
             
             local FrameCount = 0
@@ -4129,6 +4132,7 @@ do
                 Parent = Items["SubElements"],
                 Flag = Keybind.Flag,
                 Section = Keybind.Section,
+                KeybindList = Data.KeybindList,
                 Default = Keybind.Default,
                 Mode = Keybind.Mode,
                 Callback = Keybind.Callback
@@ -5061,6 +5065,7 @@ do
                 Parent = Items["SubElements"],
                 Flag = Keybind.Flag,
                 Section = Keybind.Section,
+                KeybindList = Data.KeybindList,
                 Default = Keybind.Default,
                 Mode = Keybind.Mode,
                 Callback = Keybind.Callback
