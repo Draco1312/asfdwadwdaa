@@ -962,17 +962,17 @@ end
 Library.DefaultPageIcon = "6031075929"
 Library.PageIconAliases = {
     ["combat"] = "6034684930",
-    ["aim"] = "7734059145",
+    ["aim"] = "6034684931",
     ["rage"] = "6034684930",
     ["legit"] = "6034684931",
-    ["visual"] = "7733975164",
-    ["esp"] = "7733975164",
+    ["visual"] = "6026568198",
+    ["esp"] = "6026568198",
     ["player"] = "6031094669",
     ["users"] = "6031094669",
-    ["misc"] = "7733960982",
-    ["other"] = "7733960982",
+    ["misc"] = "6022668898",
+    ["other"] = "6022668898",
     ["settings"] = "6031094678",
-    ["config"] = "7733977621",
+    ["config"] = "6031094678",
     ["world"] = "6031094651",
     ["map"] = "6031094651",
     ["movement"] = "6031094684",
@@ -980,7 +980,7 @@ Library.PageIconAliases = {
     ["home"] = "6031075929",
     ["main"] = "6031075929",
     ["shop"] = "6031075938",
-    ["inventory"] = "6031094667",
+    ["inventory"] = "6031075938",
 }
 
 Library.ResolvePageIcon = function(self, Name, ExplicitIcon)
@@ -3567,7 +3567,7 @@ do
                 AnchorPoint = Vector2New(0.5, 0.5),
                 Position = UDim2New(0.5, 0, 0.5, 0),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(0, 664, 0, 548),
+                Size = UDim2New(0, 768, 0, 628),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(17, 21, 27)
             })  Items["MainFrame"]:AddToTheme({BackgroundColor3 = "Background 1"})
@@ -3578,7 +3578,7 @@ do
             })
 
             Items["MainFrame"]:MakeDraggable()
-            Items["MainFrame"]:MakeResizeable(Vector2New(664, 548), Vector2New(9999, 9999))
+            Items["MainFrame"]:MakeResizeable(Vector2New(768, 628), Vector2New(9999, 9999))
             
             Items["UIStroke"] = Instances:Create("UIStroke", {
                 Parent = Items["MainFrame"].Instance,
@@ -3685,7 +3685,7 @@ do
                 BackgroundColor3 = FromRGB(18, 21, 32),
                 BorderSizePixel = 0,
                 Position = UDim2New(0, 0, 0, 0),
-                Size = UDim2New(0, 190, 1, 0),
+                Size = UDim2New(0, 208, 1, 0),
                 ZIndex = 2,
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Items["Sidebar"]:AddToTheme({BackgroundColor3 = "Background 2"})
@@ -3742,9 +3742,9 @@ do
                 Name = "\0",
                 BorderColor3 = FromRGB(0, 0, 0),
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 198, 0, 0),
+                Position = UDim2New(0, 216, 0, 0),
                 ClipsDescendants = true,
-                Size = UDim2New(1, -206, 1, 0),
+                Size = UDim2New(1, -224, 1, 0),
                 ZIndex = 2,
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
@@ -3875,6 +3875,9 @@ do
             _stripButtons = { },
             _subtabStripReady = false,
             _activeStripId = "__main__",
+            _lastStripAnimId = nil,
+            _tabSwitchTween = nil,
+            _subtabPanelTween = nil,
             Active = false
         }
 
@@ -3942,6 +3945,7 @@ do
                 BorderSizePixel = 0,
                 Image = "rbxassetid://" .. Page.IconId,
                 ImageColor3 = FromRGB(132, 140, 168),
+                ScaleType = Enum.ScaleType.Fit,
                 LayoutOrder = 2,
                 Size = UDim2New(0, 22, 0, 22),
                 BorderColor3 = FromRGB(0, 0, 0),
@@ -4055,24 +4059,64 @@ do
         end
 
         function Page:_ActivateStripPanel(Id)
+            local PrevStrip = Page._lastStripAnimId
             Page._activeStripId = Id
+            local ShouldAnimate = Page._subtabStripReady and PrevStrip ~= nil and PrevStrip ~= Id
+
+            local MainInst = Items["MainWork"].Instance
+            local TargetInst = nil
             if Id == "__main__" then
-                Items["MainWork"].Instance.Visible = true
-                for _, Sub in Page.Subtabs do
-                    Sub.Items["Panel"].Instance.Visible = false
-                end
+                TargetInst = MainInst
             else
-                Items["MainWork"].Instance.Visible = false
                 for _, Sub in Page.Subtabs do
-                    Sub.Items["Panel"].Instance.Visible = (Sub.PanelId == Id)
+                    if Sub.PanelId == Id then
+                        TargetInst = Sub.Items["Panel"].Instance
+                        break
+                    end
                 end
             end
+
+            if Page._subtabPanelTween then
+                Page._subtabPanelTween:Cancel()
+                Page._subtabPanelTween = nil
+            end
+
+            local function HideAllPanels()
+                MainInst.Visible = false
+                MainInst.Position = UDim2New(0, 0, 0, 0)
+                for _, Sub in Page.Subtabs do
+                    local P = Sub.Items["Panel"].Instance
+                    P.Visible = false
+                    P.Position = UDim2New(0, 0, 0, 0)
+                end
+            end
+
+            if TargetInst then
+                if ShouldAnimate then
+                    HideAllPanels()
+                    TargetInst.Visible = true
+                    TargetInst.Position = UDim2New(0, 0, 0, 20)
+                    Page._subtabPanelTween = TweenService:Create(TargetInst, TweenInfo.new(0.38, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+                        Position = UDim2New(0, 0, 0, 0)
+                    })
+                    Page._subtabPanelTween:Play()
+                else
+                    HideAllPanels()
+                    TargetInst.Visible = true
+                    TargetInst.Position = UDim2New(0, 0, 0, 0)
+                end
+            else
+                HideAllPanels()
+            end
+
+            Page._lastStripAnimId = Id
+
             for StripId, Row in Page._stripButtons do
                 local On = (StripId == Id)
                 Row.Accent.Instance.BackgroundTransparency = On and 0 or 1
                 Row.Icon:Tween(nil, {ImageColor3 = On and Library.Theme.Accent or Library.Theme["Inactive Text"]})
                 Row.Text:Tween(nil, {TextTransparency = On and 0.05 or 0.38})
-                Row.Button:Tween(nil, {BackgroundTransparency = On and 0.55 or 0.88})
+                Row.Button:Tween(nil, {BackgroundTransparency = On and 0.52 or 0.88})
             end
         end
 
@@ -4144,6 +4188,7 @@ do
                 BorderSizePixel = 0,
                 Image = "rbxassetid://" .. IconId,
                 ImageColor3 = FromRGB(132, 140, 168),
+                ScaleType = Enum.ScaleType.Fit,
                 LayoutOrder = 2,
                 Size = UDim2New(0, 14, 0, 14),
                 BorderColor3 = FromRGB(0, 0, 0)
@@ -4186,15 +4231,44 @@ do
         local Debounce = false
 
         function Page:Turn(Bool)
+            local Pg = Items["Page"].Instance
+            if Page._tabSwitchTween then
+                Page._tabSwitchTween:Cancel()
+                Page._tabSwitchTween = nil
+                Debounce = false
+            end
+
             if Debounce then
                 return
             end
 
             Page.Active = Bool
-
             Debounce = true
-            Items["Page"].Instance.Visible = Bool
-            Items["Page"].Instance.Parent = Bool and Page.Window.Items["Content"].Instance or Library.UnusedHolder.Instance
+
+            local SlideIn = TweenInfo.new(0.42, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            local SlideOut = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+
+            if Bool then
+                Pg.Parent = Page.Window.Items["Content"].Instance
+                Pg.Visible = true
+                Pg.Position = UDim2New(0, 28, 0, 0)
+                Page._tabSwitchTween = TweenService:Create(Pg, SlideIn, { Position = UDim2New(0, 0, 0, 0) })
+                Page._tabSwitchTween.Completed:Once(function()
+                    Page._tabSwitchTween = nil
+                    Debounce = false
+                end)
+                Page._tabSwitchTween:Play()
+            else
+                Page._tabSwitchTween = TweenService:Create(Pg, SlideOut, { Position = UDim2New(0, -24, 0, 0) })
+                Page._tabSwitchTween.Completed:Once(function()
+                    Pg.Parent = Library.UnusedHolder.Instance
+                    Pg.Position = UDim2New(0, 0, 0, 0)
+                    Pg.Visible = false
+                    Page._tabSwitchTween = nil
+                    Debounce = false
+                end)
+                Page._tabSwitchTween:Play()
+            end
 
             if Page.Active then
                 Items["Text"]:Tween(nil, {TextTransparency = 0.05})
@@ -4207,8 +4281,6 @@ do
                 Items["AccentBar"]:Tween(nil, {BackgroundTransparency = 1})
                 Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme["Inactive Text"]})
             end
-
-            Debounce = false
         end
 
         Items["Inactive"]:Connect("MouseButton1Down", function()
