@@ -961,19 +961,19 @@ end
 
 Library.DefaultPageIcon = "6031075929"
 Library.PageIconAliases = {
-    ["combat"] = "6034684930",
+    ["combat"] = "6034684931",
     ["aim"] = "6034684931",
-    ["rage"] = "6034684930",
+    ["rage"] = "6034684931",
     ["legit"] = "6034684931",
-    ["visuals"] = "6026568198",
-    ["visual"] = "6026568198",
-    ["esp"] = "6026568198",
+    ["visuals"] = "5012538258",
+    ["visual"] = "5012538258",
+    ["esp"] = "5012538258",
     ["player"] = "6031094669",
     ["users"] = "6031094669",
-    ["misc"] = "6022668898",
-    ["other"] = "6022668898",
-    ["settings"] = "6031094678",
-    ["config"] = "6031094678",
+    ["misc"] = "6031094669",
+    ["other"] = "6031094669",
+    ["settings"] = "3944686896",
+    ["config"] = "3944686896",
     ["world"] = "6031094651",
     ["map"] = "6031094651",
     ["movement"] = "6031094684",
@@ -5791,7 +5791,7 @@ do
     end
 
     Library.CreateSettingsPage = function(self, Window, KeybindList, Watermark, ModeratorList)
-        local SettingsPage = Window:Page({Name = "Settings", Icon = "6031094678", Columns = 2})
+        local SettingsPage = Window:Page({Name = "Settings", Icon = "3944686896", Columns = 2})
         local SettingsSection = SettingsPage:Section({Name = "Settings", Side = 1}) do
             SettingsSection:Button({
                 Name = "Unload",
