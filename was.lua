@@ -959,6 +959,46 @@ Library.GetLighterColor = function(self, Color, Increment)
     return FromHSV(Hue, Saturation, Value * Increment)
 end
 
+Library.DefaultPageIcon = "6031075929"
+Library.PageIconAliases = {
+    ["combat"] = "6034684930",
+    ["aim"] = "7734059145",
+    ["rage"] = "6034684930",
+    ["legit"] = "6034684931",
+    ["visual"] = "7733975164",
+    ["esp"] = "7733975164",
+    ["player"] = "6031094669",
+    ["users"] = "6031094669",
+    ["misc"] = "7733960982",
+    ["other"] = "7733960982",
+    ["settings"] = "6031094678",
+    ["config"] = "7733977621",
+    ["world"] = "6031094651",
+    ["map"] = "6031094651",
+    ["movement"] = "6031094684",
+    ["speed"] = "6031094684",
+    ["home"] = "6031075929",
+    ["main"] = "6031075929",
+    ["shop"] = "6031075938",
+    ["inventory"] = "6031094667",
+}
+
+Library.ResolvePageIcon = function(self, Name, ExplicitIcon)
+    if ExplicitIcon ~= nil and tostring(ExplicitIcon) ~= "" then
+        local Raw = tostring(ExplicitIcon)
+        Raw = StringGSub(Raw, "^rbxassetid://", "")
+        Raw = StringGSub(Raw, "^http://www.roblox.com/asset/?id=", "")
+        return Raw
+    end
+    local Lower = StringLower(Name or "")
+    for Keyword, Id in self.PageIconAliases do
+        if StringFind(Lower, Keyword, 1, true) then
+            return Id
+        end
+    end
+    return self.DefaultPageIcon
+end
+
 do 
     Library.CreateColorpicker = function(self, Data)
         local Colorpicker = {
@@ -3464,6 +3504,50 @@ do
         return TargetHud 
     end
 
+    local function BuildPageColumns(ParentFrame, ColumnCount)
+        local ColData = { }
+        Instances:Create("UIListLayout", {
+            Parent = ParentFrame,
+            Name = "\0",
+            FillDirection = Enum.FillDirection.Horizontal,
+            HorizontalFlex = Enum.UIFlexAlignment.Fill,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            VerticalFlex = Enum.UIFlexAlignment.Fill
+        })
+        for Index = 1, ColumnCount do
+            local NewColumn = Instances:Create("ScrollingFrame", {
+                Parent = ParentFrame,
+                Name = "\0",
+                ScrollBarImageColor3 = FromRGB(0, 0, 0),
+                Active = true,
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                BorderColor3 = FromRGB(0, 0, 0),
+                ScrollBarThickness = 0,
+                BackgroundTransparency = 1,
+                Size = UDim2New(0, 100, 0, 100),
+                CanvasSize = UDim2New(0, 0, 0, 0),
+                BorderSizePixel = 0,
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })
+            Instances:Create("UIPadding", {
+                Parent = NewColumn.Instance,
+                Name = "\0",
+                PaddingTop = UDimNew(0, 5),
+                PaddingBottom = UDimNew(0, 8),
+                PaddingRight = UDimNew(0, 8),
+                PaddingLeft = UDimNew(0, 8)
+            })
+            Instances:Create("UIListLayout", {
+                Parent = NewColumn.Instance,
+                Name = "\0",
+                Padding = UDimNew(0, 14),
+                SortOrder = Enum.SortOrder.LayoutOrder
+            })
+            ColData[Index] = NewColumn
+        end
+        return ColData
+    end
+
     Library.Window = function(self, Data)
         Data = Data or { }
 
@@ -3483,7 +3567,7 @@ do
                 AnchorPoint = Vector2New(0.5, 0.5),
                 Position = UDim2New(0.5, 0, 0.5, 0),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(0, 621, 0, 542),
+                Size = UDim2New(0, 664, 0, 548),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(17, 21, 27)
             })  Items["MainFrame"]:AddToTheme({BackgroundColor3 = "Background 1"})
@@ -3494,7 +3578,7 @@ do
             })
 
             Items["MainFrame"]:MakeDraggable()
-            Items["MainFrame"]:MakeResizeable(Vector2New(621, 542), Vector2New(9999, 9999))
+            Items["MainFrame"]:MakeResizeable(Vector2New(664, 548), Vector2New(9999, 9999))
             
             Items["UIStroke"] = Instances:Create("UIStroke", {
                 Parent = Items["MainFrame"].Instance,
@@ -3542,8 +3626,8 @@ do
                 Parent = Items["Inline"].Instance,
                 Name = "\0",
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 0, 0, 10),
-                Size = UDim2New(1, 0, 0, 35),
+                Position = UDim2New(0, 6, 0, 6),
+                Size = UDim2New(1, -12, 0, 36),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })
@@ -3565,7 +3649,7 @@ do
                 BorderColor3 = FromRGB(0, 0, 0),
                 Image = "rbxassetid://"..Window.Logo,
                 BackgroundTransparency = 1,
-                Size = UDim2New(0, 18, 0, 18),
+                Size = UDim2New(0, 20, 0, 20),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Logo"]:AddToTheme({ImageColor3 = "Accent"})
@@ -3581,18 +3665,86 @@ do
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 AutomaticSize = Enum.AutomaticSize.X,
-                TextSize = 15,
+                TextSize = 16,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
 
-            Items["Content"] = Instances:Create("Frame", {
+            Items["Body"] = Instances:Create("Frame", {
                 Parent = Items["Inline"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                Position = UDim2New(0, 6, 0, 48),
+                Size = UDim2New(1, -12, 1, -54),
+                BorderSizePixel = 0,
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })
+
+            Items["Sidebar"] = Instances:Create("Frame", {
+                Parent = Items["Body"].Instance,
+                Name = "\0",
+                BackgroundColor3 = FromRGB(18, 21, 32),
+                BorderSizePixel = 0,
+                Position = UDim2New(0, 0, 0, 0),
+                Size = UDim2New(0, 190, 1, 0),
+                ZIndex = 2,
+                BorderColor3 = FromRGB(0, 0, 0)
+            })  Items["Sidebar"]:AddToTheme({BackgroundColor3 = "Background 2"})
+
+            Instances:Create("UICorner", {
+                Parent = Items["Sidebar"].Instance,
+                CornerRadius = UDim.new(0, 12)
+            })
+
+            Instances:Create("UIStroke", {
+                Parent = Items["Sidebar"].Instance,
+                Name = "\0",
+                Thickness = 1,
+                Transparency = 0.35,
+                Color = FromRGB(46, 52, 61),
+                LineJoinMode = Enum.LineJoinMode.Round,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            }):AddToTheme({Color = "Border"})
+
+            Items["PageList"] = Instances:Create("ScrollingFrame", {
+                Parent = Items["Sidebar"].Instance,
+                Name = "\0",
+                Active = true,
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                BackgroundColor3 = FromRGB(255, 255, 255),
+                BackgroundTransparency = 1,
+                BorderColor3 = FromRGB(0, 0, 0),
+                BorderSizePixel = 0,
+                CanvasSize = UDim2New(0, 0, 0, 0),
+                Position = UDim2New(0, 6, 0, 8),
+                ScrollBarImageColor3 = FromRGB(46, 52, 61),
+                ScrollBarThickness = 3,
+                ScrollingDirection = Enum.ScrollingDirection.Y,
+                Size = UDim2New(1, -12, 1, -16),
+                ZIndex = 3,
+                ClipsDescendants = true
+            })  Items["PageList"]:AddToTheme({ScrollBarImageColor3 = "Border"})
+
+            Instances:Create("UIListLayout", {
+                Parent = Items["PageList"].Instance,
+                Name = "\0",
+                Padding = UDimNew(0, 8),
+                SortOrder = Enum.SortOrder.LayoutOrder
+            })
+
+            Instances:Create("UIPadding", {
+                Parent = Items["PageList"].Instance,
+                Name = "\0",
+                PaddingBottom = UDimNew(0, 10)
+            })
+
+            Items["Content"] = Instances:Create("Frame", {
+                Parent = Items["Body"].Instance,
                 Name = "\0",
                 BorderColor3 = FromRGB(0, 0, 0),
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 7, 0, 50),
+                Position = UDim2New(0, 198, 0, 0),
                 ClipsDescendants = true,
-                Size = UDim2New(1, -14, 1, -56),
+                Size = UDim2New(1, -206, 1, 0),
                 ZIndex = 2,
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
@@ -3612,25 +3764,6 @@ do
                 LineJoinMode = Enum.LineJoinMode.Round,
                 ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             }):AddToTheme({Color = "Border"})
-            
-            Items["Pages"] = Instances:Create("Frame", {
-                Parent = Items["Content"].Instance,
-                Name = "\0",
-                BackgroundTransparency = 1,
-                BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, 0, 0, 28),
-                BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(255, 255, 255)
-            })
-            
-            Instances:Create("UIListLayout", {
-                Parent = Items["Pages"].Instance,
-                Name = "\0",
-                FillDirection = Enum.FillDirection.Horizontal,
-                HorizontalFlex = Enum.UIFlexAlignment.Fill,
-                Padding = UDimNew(0, 6),
-                SortOrder = Enum.SortOrder.LayoutOrder
-            })                
 
             Items["Glow"] = Instances:Create("ImageLabel", {
                 Parent = Items["MainFrame"].Instance,
@@ -3734,151 +3867,352 @@ do
 
             Name = Data.Name or Data.name or "Page",
             Columns = Data.Columns or Data.columns or 2,
+            IconId = Library:ResolvePageIcon(Data.Name or Data.name, Data.Icon or Data.icon),
 
             Items = { },
             ColumnsData = { },
+            Subtabs = { },
+            _stripButtons = { },
+            _subtabStripReady = false,
+            _activeStripId = "__main__",
             Active = false
         }
 
         local Items = { } do
             Items["Inactive"] = Instances:Create("TextButton", {
-                Parent = Page.Window.Items["Pages"].Instance,
+                Parent = Page.Window.Items["PageList"].Instance,
                 Name = "\0",
                 FontFace = Library.Font,
                 TextColor3 = FromRGB(0, 0, 0),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = "",
                 AutoButtonColor = false,
-                BackgroundTransparency = 0.94,
-                Size = UDim2New(0, 0, 1, 0),
+                BackgroundTransparency = 0.92,
+                Size = UDim2New(1, 0, 0, 46),
                 BorderSizePixel = 0,
                 TextSize = 14,
-                BackgroundColor3 = FromRGB(32, 38, 48)
+                BackgroundColor3 = FromRGB(32, 38, 48),
+                ZIndex = 2
             })  Items["Inactive"]:AddToTheme({BackgroundColor3 = "Element"})
-            
+
             Instances:Create("UICorner", {
                 Parent = Items["Inactive"].Instance,
-                CornerRadius = UDim.new(0, 8)
+                CornerRadius = UDim.new(0, 10)
             })
-            
+
             Instances:Create("UIStroke", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
                 Thickness = 1,
-                Transparency = 0.4,
+                Transparency = 0.45,
                 Color = FromRGB(46, 52, 61),
                 LineJoinMode = Enum.LineJoinMode.Round,
                 ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             }):AddToTheme({Color = "Border"})
-            
+
+            Instances:Create("UIListLayout", {
+                Parent = Items["Inactive"].Instance,
+                Name = "\0",
+                FillDirection = Enum.FillDirection.Horizontal,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDimNew(0, 10)
+            })
+
+            Items["AccentBar"] = Instances:Create("Frame", {
+                Parent = Items["Inactive"].Instance,
+                Name = "\0",
+                BackgroundColor3 = FromRGB(94, 213, 213),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                LayoutOrder = 1,
+                Size = UDim2New(0, 3, 0, 22),
+                BorderColor3 = FromRGB(0, 0, 0)
+            })  Items["AccentBar"]:AddToTheme({BackgroundColor3 = "Accent"})
+
+            Instances:Create("UICorner", {
+                Parent = Items["AccentBar"].Instance,
+                CornerRadius = UDim.new(1, 0)
+            })
+
+            Items["Icon"] = Instances:Create("ImageLabel", {
+                Parent = Items["Inactive"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Image = "rbxassetid://" .. Page.IconId,
+                ImageColor3 = FromRGB(132, 140, 168),
+                LayoutOrder = 2,
+                Size = UDim2New(0, 22, 0, 22),
+                BorderColor3 = FromRGB(0, 0, 0),
+                ZIndex = 3
+            })  Items["Icon"]:AddToTheme({ImageColor3 = "Inactive Text"})
+
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Inactive"].Instance,
                 Name = "\0",
                 FontFace = Library.Font,
                 TextColor3 = FromRGB(255, 255, 255),
-                TextTransparency = 0.42,
+                TextTransparency = 0.35,
                 Text = Page.Name,
+                TextXAlignment = Enum.TextXAlignment.Left,
                 AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2New(0, 0, 0, 15),
-                AnchorPoint = Vector2New(0.5, 0.5),
+                Size = UDim2New(0, 0, 0, 16),
                 BorderSizePixel = 0,
                 BackgroundTransparency = 1,
-                Position = UDim2New(0.5, 0, 0.5, 0),
                 BorderColor3 = FromRGB(0, 0, 0),
-                ZIndex = 5,
+                LayoutOrder = 3,
+                ZIndex = 3,
                 TextSize = 13,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Text"]:AddToTheme({TextColor3 = "Text"})
-                
+
             Items["Page"] = Instances:Create("Frame", {
                 Parent = Library.UnusedHolder.Instance,
                 Name = "\0",
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 0, 0, 80),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Visible = false,
-                Size = UDim2New(1, 0, 1, -38),
+                Size = UDim2New(1, 0, 1, 0),
                 BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(255, 255, 255)
+                BackgroundColor3 = FromRGB(255, 255, 255),
+                ClipsDescendants = true
             })
-            
-            Instances:Create("UIListLayout", {
+
+            Items["SubtabStrip"] = Instances:Create("Frame", {
                 Parent = Items["Page"].Instance,
                 Name = "\0",
-                FillDirection = Enum.FillDirection.Horizontal,
-                HorizontalFlex = Enum.UIFlexAlignment.Fill,
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                VerticalFlex = Enum.UIFlexAlignment.Fill
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Position = UDim2New(0, 0, 0, 0),
+                Size = UDim2New(1, 0, 0, 0),
+                Visible = false,
+                ZIndex = 3,
+                BorderColor3 = FromRGB(0, 0, 0),
+                BackgroundColor3 = FromRGB(255, 255, 255)
             })
-            
-            for Index = 1, Page.Columns do 
-                local NewColumn = Instances:Create("ScrollingFrame", {
-                    Parent = Items["Page"].Instance,
-                    Name = "\0",
-                    ScrollBarImageColor3 = FromRGB(0, 0, 0),
-                    Active = true,
-                    AutomaticCanvasSize = Enum.AutomaticSize.Y,
-                    BorderColor3 = FromRGB(0, 0, 0),
-                    ScrollBarThickness = 0,
-                    BackgroundTransparency = 1,
-                    Size = UDim2New(0, 100, 0, 100),
-                    CanvasSize = UDim2New(0, 0, 0, 0),
-                    BorderSizePixel = 0,
-                    BackgroundColor3 = FromRGB(255, 255, 255)
-                })
-                
-                Instances:Create("UIPadding", {
-                    Parent = NewColumn.Instance,
-                    Name = "\0",
-                    PaddingTop = UDimNew(0, 5),
-                    PaddingBottom = UDimNew(0, 8),
-                    PaddingRight = UDimNew(0, 8),
-                    PaddingLeft = UDimNew(0, 8)
-                })
-                
+
             Instances:Create("UIListLayout", {
-                Parent = NewColumn.Instance,
+                Parent = Items["SubtabStrip"].Instance,
                 Name = "\0",
-                Padding = UDimNew(0, 14),
+                FillDirection = Enum.FillDirection.Horizontal,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+                HorizontalAlignment = Enum.HorizontalAlignment.Left,
+                Padding = UDimNew(0, 8),
                 SortOrder = Enum.SortOrder.LayoutOrder
             })
 
-                Page.ColumnsData[Index] = NewColumn
-            end                                    
+            Instances:Create("UIPadding", {
+                Parent = Items["SubtabStrip"].Instance,
+                Name = "\0",
+                PaddingLeft = UDimNew(0, 4),
+                PaddingTop = UDimNew(0, 2),
+                PaddingBottom = UDimNew(0, 6)
+            })
 
+            Items["Viewport"] = Instances:Create("Frame", {
+                Parent = Items["Page"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Position = UDim2New(0, 0, 0, 0),
+                Size = UDim2New(1, 0, 1, 0),
+                ZIndex = 2,
+                ClipsDescendants = true,
+                BorderColor3 = FromRGB(0, 0, 0),
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })
+
+            Items["MainWork"] = Instances:Create("Frame", {
+                Parent = Items["Viewport"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Position = UDim2New(0, 0, 0, 0),
+                Size = UDim2New(1, 0, 1, 0),
+                BorderColor3 = FromRGB(0, 0, 0),
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })
+
+            Page.ColumnsData = BuildPageColumns(Items["MainWork"].Instance, Page.Columns)
             Page.Items = Items
+        end
+
+        function Page:_LayoutSubtabStrip()
+            local Strip = Items["SubtabStrip"].Instance
+            local View = Items["Viewport"].Instance
+            if Page._subtabStripReady then
+                Strip.Visible = true
+                Strip.Size = UDim2New(1, 0, 0, 34)
+                View.Position = UDim2New(0, 0, 0, 34)
+                View.Size = UDim2New(1, 0, 1, -34)
+            else
+                Strip.Visible = false
+                Strip.Size = UDim2New(1, 0, 0, 0)
+                View.Position = UDim2New(0, 0, 0, 0)
+                View.Size = UDim2New(1, 0, 1, 0)
+            end
+        end
+
+        function Page:_ActivateStripPanel(Id)
+            Page._activeStripId = Id
+            if Id == "__main__" then
+                Items["MainWork"].Instance.Visible = true
+                for _, Sub in Page.Subtabs do
+                    Sub.Items["Panel"].Instance.Visible = false
+                end
+            else
+                Items["MainWork"].Instance.Visible = false
+                for _, Sub in Page.Subtabs do
+                    Sub.Items["Panel"].Instance.Visible = (Sub.PanelId == Id)
+                end
+            end
+            for StripId, Row in Page._stripButtons do
+                local On = (StripId == Id)
+                Row.Accent.Instance.BackgroundTransparency = On and 0 or 1
+                Row.Icon:Tween(nil, {ImageColor3 = On and Library.Theme.Accent or Library.Theme["Inactive Text"]})
+                Row.Text:Tween(nil, {TextTransparency = On and 0.05 or 0.38})
+                Row.Button:Tween(nil, {BackgroundTransparency = On and 0.55 or 0.88})
+            end
+        end
+
+        function Page:_AddStripButton(Id, Label, IconId)
+            if Page._stripButtons[Id] then
+                return
+            end
+            local Row = { }
+
+            Row.Button = Instances:Create("TextButton", {
+                Parent = Items["SubtabStrip"].Instance,
+                Name = "\0",
+                AutoButtonColor = false,
+                BackgroundColor3 = FromRGB(32, 38, 48),
+                BackgroundTransparency = 0.88,
+                BorderSizePixel = 0,
+                FontFace = Library.Font,
+                Size = UDim2New(0, 0, 0, 28),
+                AutomaticSize = Enum.AutomaticSize.X,
+                Text = "",
+                TextSize = 12,
+                ZIndex = 4,
+                BorderColor3 = FromRGB(0, 0, 0)
+            })  Row.Button:AddToTheme({BackgroundColor3 = "Element"})
+
+            Instances:Create("UICorner", {
+                Parent = Row.Button.Instance,
+                CornerRadius = UDim.new(0, 8)
+            })
+
+            Instances:Create("UIPadding", {
+                Parent = Row.Button.Instance,
+                Name = "\0",
+                PaddingLeft = UDimNew(0, 8),
+                PaddingRight = UDimNew(0, 10),
+                PaddingTop = UDimNew(0, 4),
+                PaddingBottom = UDimNew(0, 4)
+            })
+
+            Instances:Create("UIListLayout", {
+                Parent = Row.Button.Instance,
+                Name = "\0",
+                FillDirection = Enum.FillDirection.Horizontal,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+                Padding = UDimNew(0, 6),
+                SortOrder = Enum.SortOrder.LayoutOrder
+            })
+
+            Row.Accent = Instances:Create("Frame", {
+                Parent = Row.Button.Instance,
+                Name = "\0",
+                BackgroundColor3 = FromRGB(94, 213, 213),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                LayoutOrder = 1,
+                Size = UDim2New(0, 2, 0, 14),
+                BorderColor3 = FromRGB(0, 0, 0)
+            })  Row.Accent:AddToTheme({BackgroundColor3 = "Accent"})
+
+            Instances:Create("UICorner", {
+                Parent = Row.Accent.Instance,
+                CornerRadius = UDim.new(1, 0)
+            })
+
+            Row.Icon = Instances:Create("ImageLabel", {
+                Parent = Row.Button.Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Image = "rbxassetid://" .. IconId,
+                ImageColor3 = FromRGB(132, 140, 168),
+                LayoutOrder = 2,
+                Size = UDim2New(0, 14, 0, 14),
+                BorderColor3 = FromRGB(0, 0, 0)
+            })  Row.Icon:AddToTheme({ImageColor3 = "Inactive Text"})
+
+            Row.Text = Instances:Create("TextLabel", {
+                Parent = Row.Button.Instance,
+                Name = "\0",
+                FontFace = Library.Font,
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Text = Label,
+                TextSize = 12,
+                TextTransparency = 0.38,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                AutomaticSize = Enum.AutomaticSize.X,
+                Size = UDim2New(0, 0, 0, 14),
+                BorderColor3 = FromRGB(0, 0, 0),
+                TextColor3 = FromRGB(255, 255, 255)
+            })  Row.Text:AddToTheme({TextColor3 = "Text"})
+
+            Page._stripButtons[Id] = Row
+
+            Row.Button:Connect("MouseButton1Down", function()
+                Page:_ActivateStripPanel(Id)
+            end)
+
+            Page:_ActivateStripPanel(Page._activeStripId)
+        end
+
+        function Page:_InitSubtabStrip()
+            if Page._subtabStripReady then
+                return
+            end
+            Page._subtabStripReady = true
+            Page:_LayoutSubtabStrip()
+            Page:_AddStripButton("__main__", "Overview", Library.DefaultPageIcon)
         end
 
         local Debounce = false
 
         function Page:Turn(Bool)
-            if Debounce then 
-                return 
+            if Debounce then
+                return
             end
 
-            Page.Active = Bool 
-            
+            Page.Active = Bool
+
             Debounce = true
-            Items["Page"].Instance.Visible = Bool 
+            Items["Page"].Instance.Visible = Bool
             Items["Page"].Instance.Parent = Bool and Page.Window.Items["Content"].Instance or Library.UnusedHolder.Instance
 
             if Page.Active then
-                Items["Text"]:Tween(nil, {TextTransparency = 0})
-                Items["Inactive"]:Tween(nil, {BackgroundTransparency = 0.72})
-
-                Items["Page"]:Tween(TweenInfo.new(0.48, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2New(0, 0, 0, 30)})
+                Items["Text"]:Tween(nil, {TextTransparency = 0.05})
+                Items["Inactive"]:Tween(nil, {BackgroundTransparency = 0.62})
+                Items["AccentBar"]:Tween(nil, {BackgroundTransparency = 0})
+                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
             else
-                Items["Text"]:Tween(nil, {TextTransparency = 0.42})
-                Items["Inactive"]:Tween(nil, {BackgroundTransparency = 0.94})
-
-                Items["Page"]:Tween(TweenInfo.new(0.48, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2New(0, 0, 0, 36)})
+                Items["Text"]:Tween(nil, {TextTransparency = 0.35})
+                Items["Inactive"]:Tween(nil, {BackgroundTransparency = 0.92})
+                Items["AccentBar"]:Tween(nil, {BackgroundTransparency = 1})
+                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme["Inactive Text"]})
             end
 
             Debounce = false
         end
 
         Items["Inactive"]:Connect("MouseButton1Down", function()
-            for Index, Value in Page.Window.Pages do 
+            for Index, Value in Page.Window.Pages do
                 if Value == Page and Page.Active then
                     return
                 end
@@ -3887,12 +4221,59 @@ do
             end
         end)
 
-        if #Page.Window.Pages == 0 then 
+        if #Page.Window.Pages == 0 then
             Page:Turn(true)
         end
 
         TableInsert(Page.Window.Pages, Page)
         return setmetatable(Page, Library.Pages)
+    end
+
+    Library.Pages.Subtab = function(Page, Data)
+        Data = Data or { }
+
+        local SubName = Data.Name or Data.name or "Subtab"
+        local Sub = {
+            Window = Page.Window,
+            Page = Page,
+            Name = SubName,
+            PanelId = SubName,
+            Columns = Data.Columns or Data.columns or Page.Columns,
+            Items = { },
+            ColumnsData = { }
+        }
+
+        Page:_InitSubtabStrip()
+
+        local PI = Page.Items
+        local PanelWrap = Instances:Create("Frame", {
+            Parent = PI["Viewport"].Instance,
+            Name = "\0",
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Position = UDim2New(0, 0, 0, 0),
+            Size = UDim2New(1, 0, 1, 0),
+            Visible = false,
+            ZIndex = 2,
+            BorderColor3 = FromRGB(0, 0, 0),
+            BackgroundColor3 = FromRGB(255, 255, 255)
+        })
+
+        Sub.Items["Panel"] = PanelWrap
+        Sub.ColumnsData = BuildPageColumns(PanelWrap.Instance, Sub.Columns)
+
+        local SubIcon = Library:ResolvePageIcon(SubName, Data.Icon or Data.icon)
+        Page:_AddStripButton(Sub.PanelId, SubName, SubIcon)
+
+        TableInsert(Page.Subtabs, Sub)
+        return setmetatable(Sub, {
+            __index = function(_, Key)
+                if Key == "Subtab" then
+                    return nil
+                end
+                return Library.Pages[Key]
+            end
+        })
     end
 
     Library.Pages.Section = function(self, Data)
@@ -5326,7 +5707,7 @@ do
     end
 
     Library.CreateSettingsPage = function(self, Window, KeybindList, Watermark, ModeratorList)
-        local SettingsPage = Window:Page({Name = "Settings", Columns = 2})
+        local SettingsPage = Window:Page({Name = "Settings", Icon = "6031094678", Columns = 2})
         local SettingsSection = SettingsPage:Section({Name = "Settings", Side = 1}) do
             SettingsSection:Button({
                 Name = "Unload",
