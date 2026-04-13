@@ -965,6 +965,7 @@ Library.PageIconAliases = {
     ["aim"] = "6034684931",
     ["rage"] = "6034684930",
     ["legit"] = "6034684931",
+    ["visuals"] = "6026568198",
     ["visual"] = "6026568198",
     ["esp"] = "6026568198",
     ["player"] = "6031094669",
@@ -983,11 +984,18 @@ Library.PageIconAliases = {
     ["inventory"] = "6031075938",
 }
 
+Library.BrokenIconIds = {
+    ["7733975164"] = "6026568198",
+    ["7733960982"] = "6022668898",
+}
+
 Library.ResolvePageIcon = function(self, Name, ExplicitIcon)
     if ExplicitIcon ~= nil and tostring(ExplicitIcon) ~= "" then
         local Raw = tostring(ExplicitIcon)
         Raw = StringGSub(Raw, "^rbxassetid://", "")
         Raw = StringGSub(Raw, "^http://www.roblox.com/asset/?id=", "")
+        Raw = StringGSub(Raw, "^https://www.roblox.com/asset/?id=", "")
+        Raw = self.BrokenIconIds[Raw] or Raw
         return Raw
     end
     local Lower = StringLower(Name or "")
@@ -3567,7 +3575,7 @@ do
                 AnchorPoint = Vector2New(0.5, 0.5),
                 Position = UDim2New(0.5, 0, 0.5, 0),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(0, 768, 0, 628),
+                Size = UDim2New(0, 880, 0, 708),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(17, 21, 27)
             })  Items["MainFrame"]:AddToTheme({BackgroundColor3 = "Background 1"})
@@ -3578,7 +3586,7 @@ do
             })
 
             Items["MainFrame"]:MakeDraggable()
-            Items["MainFrame"]:MakeResizeable(Vector2New(768, 628), Vector2New(9999, 9999))
+            Items["MainFrame"]:MakeResizeable(Vector2New(880, 708), Vector2New(9999, 9999))
             
             Items["UIStroke"] = Instances:Create("UIStroke", {
                 Parent = Items["MainFrame"].Instance,
@@ -3627,7 +3635,7 @@ do
                 Name = "\0",
                 BackgroundTransparency = 1,
                 Position = UDim2New(0, 6, 0, 6),
-                Size = UDim2New(1, -12, 0, 36),
+                Size = UDim2New(1, -12, 0, 42),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })
@@ -3649,7 +3657,7 @@ do
                 BorderColor3 = FromRGB(0, 0, 0),
                 Image = "rbxassetid://"..Window.Logo,
                 BackgroundTransparency = 1,
-                Size = UDim2New(0, 20, 0, 20),
+                Size = UDim2New(0, 24, 0, 24),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Logo"]:AddToTheme({ImageColor3 = "Accent"})
@@ -3661,11 +3669,11 @@ do
                 TextColor3 = FromRGB(255, 255, 255),
                 BorderColor3 = FromRGB(0, 0, 0),
                 Text = Window.Name,
-                Size = UDim2New(0, 0, 0, 18),
+                Size = UDim2New(0, 0, 0, 22),
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 AutomaticSize = Enum.AutomaticSize.X,
-                TextSize = 16,
+                TextSize = 18,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Title"]:AddToTheme({TextColor3 = "Text"})
 
@@ -3673,8 +3681,8 @@ do
                 Parent = Items["Inline"].Instance,
                 Name = "\0",
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 6, 0, 48),
-                Size = UDim2New(1, -12, 1, -54),
+                Position = UDim2New(0, 6, 0, 54),
+                Size = UDim2New(1, -12, 1, -60),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })
@@ -3685,7 +3693,7 @@ do
                 BackgroundColor3 = FromRGB(18, 21, 32),
                 BorderSizePixel = 0,
                 Position = UDim2New(0, 0, 0, 0),
-                Size = UDim2New(0, 208, 1, 0),
+                Size = UDim2New(0, 252, 1, 0),
                 ZIndex = 2,
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Items["Sidebar"]:AddToTheme({BackgroundColor3 = "Background 2"})
@@ -3742,9 +3750,9 @@ do
                 Name = "\0",
                 BorderColor3 = FromRGB(0, 0, 0),
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 216, 0, 0),
+                Position = UDim2New(0, 266, 0, 0),
                 ClipsDescendants = true,
-                Size = UDim2New(1, -224, 1, 0),
+                Size = UDim2New(1, -278, 1, 0),
                 ZIndex = 2,
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
@@ -3891,7 +3899,7 @@ do
                 Text = "",
                 AutoButtonColor = false,
                 BackgroundTransparency = 0.92,
-                Size = UDim2New(1, 0, 0, 46),
+                Size = UDim2New(1, 0, 0, 54),
                 BorderSizePixel = 0,
                 TextSize = 14,
                 BackgroundColor3 = FromRGB(32, 38, 48),
@@ -3929,7 +3937,7 @@ do
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 LayoutOrder = 1,
-                Size = UDim2New(0, 3, 0, 22),
+                Size = UDim2New(0, 3, 0, 28),
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Items["AccentBar"]:AddToTheme({BackgroundColor3 = "Accent"})
 
@@ -3944,10 +3952,11 @@ do
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 Image = "rbxassetid://" .. Page.IconId,
+                ImageTransparency = 0,
                 ImageColor3 = FromRGB(132, 140, 168),
                 ScaleType = Enum.ScaleType.Fit,
                 LayoutOrder = 2,
-                Size = UDim2New(0, 22, 0, 22),
+                Size = UDim2New(0, 26, 0, 26),
                 BorderColor3 = FromRGB(0, 0, 0),
                 ZIndex = 3
             })  Items["Icon"]:AddToTheme({ImageColor3 = "Inactive Text"})
@@ -3961,13 +3970,13 @@ do
                 Text = Page.Name,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2New(0, 0, 0, 16),
+                Size = UDim2New(0, 0, 0, 18),
                 BorderSizePixel = 0,
                 BackgroundTransparency = 1,
                 BorderColor3 = FromRGB(0, 0, 0),
                 LayoutOrder = 3,
                 ZIndex = 3,
-                TextSize = 13,
+                TextSize = 14,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Text"]:AddToTheme({TextColor3 = "Text"})
 
@@ -4047,9 +4056,9 @@ do
             local View = Items["Viewport"].Instance
             if Page._subtabStripReady then
                 Strip.Visible = true
-                Strip.Size = UDim2New(1, 0, 0, 34)
-                View.Position = UDim2New(0, 0, 0, 34)
-                View.Size = UDim2New(1, 0, 1, -34)
+                Strip.Size = UDim2New(1, 0, 0, 40)
+                View.Position = UDim2New(0, 0, 0, 40)
+                View.Size = UDim2New(1, 0, 1, -40)
             else
                 Strip.Visible = false
                 Strip.Size = UDim2New(1, 0, 0, 0)
@@ -4134,10 +4143,10 @@ do
                 BackgroundTransparency = 0.88,
                 BorderSizePixel = 0,
                 FontFace = Library.Font,
-                Size = UDim2New(0, 0, 0, 28),
+                Size = UDim2New(0, 0, 0, 32),
                 AutomaticSize = Enum.AutomaticSize.X,
                 Text = "",
-                TextSize = 12,
+                TextSize = 13,
                 ZIndex = 4,
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Row.Button:AddToTheme({BackgroundColor3 = "Element"})
@@ -4172,7 +4181,7 @@ do
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 LayoutOrder = 1,
-                Size = UDim2New(0, 2, 0, 14),
+                Size = UDim2New(0, 2, 0, 18),
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Row.Accent:AddToTheme({BackgroundColor3 = "Accent"})
 
@@ -4186,11 +4195,12 @@ do
                 Name = "\0",
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
-                Image = "rbxassetid://" .. IconId,
+                Image = "rbxassetid://" .. (Library.BrokenIconIds[IconId] or IconId),
+                ImageTransparency = 0,
                 ImageColor3 = FromRGB(132, 140, 168),
                 ScaleType = Enum.ScaleType.Fit,
                 LayoutOrder = 2,
-                Size = UDim2New(0, 14, 0, 14),
+                Size = UDim2New(0, 17, 0, 17),
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Row.Icon:AddToTheme({ImageColor3 = "Inactive Text"})
 
@@ -4201,11 +4211,11 @@ do
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 Text = Label,
-                TextSize = 12,
+                TextSize = 13,
                 TextTransparency = 0.38,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AutomaticSize = Enum.AutomaticSize.X,
-                Size = UDim2New(0, 0, 0, 14),
+                Size = UDim2New(0, 0, 0, 16),
                 BorderColor3 = FromRGB(0, 0, 0),
                 TextColor3 = FromRGB(255, 255, 255)
             })  Row.Text:AddToTheme({TextColor3 = "Text"})
