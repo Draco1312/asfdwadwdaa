@@ -3895,9 +3895,7 @@ do
             _activeStripId = "__main__",
             _lastStripAnimId = nil,
             _tabSwitchTween = nil,
-            _tabSwitchScaleTween = nil,
             _subtabPanelTween = nil,
-            _subtabPanelScaleTween = nil,
             Active = false
         }
 
@@ -4004,12 +4002,6 @@ do
                 ClipsDescendants = true
             })
 
-            Items["PageScale"] = Instances:Create("UIScale", {
-                Parent = Items["Page"].Instance,
-                Name = "PageScale",
-                Scale = 1
-            })
-
             Items["SubtabStrip"] = Instances:Create("Frame", {
                 Parent = Items["Page"].Instance,
                 Name = "\0",
@@ -4107,10 +4099,6 @@ do
                 Page._subtabPanelTween:Cancel()
                 Page._subtabPanelTween = nil
             end
-            if Page._subtabPanelScaleTween then
-                Page._subtabPanelScaleTween:Cancel()
-                Page._subtabPanelScaleTween = nil
-            end
 
             local function HideAllPanels()
                 MainInst.Visible = false
@@ -4119,39 +4107,24 @@ do
                     local P = Sub.Items["Panel"].Instance
                     P.Visible = false
                     P.Position = UDim2New(0, 0, 0, 0)
-                    local Ps = P:FindFirstChild("PanelScale")
-                    if Ps and Ps:IsA("UIScale") then
-                        Ps.Scale = 1
-                    end
                 end
             end
 
-            local TiSub = TweenInfo.new(0.52, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+            local TiSub = TweenInfo.new(0.34, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
             if TargetInst then
-                local PanelSc = TargetInst:FindFirstChild("PanelScale")
                 if ShouldAnimate then
                     HideAllPanels()
                     TargetInst.Visible = true
-                    if PanelSc and PanelSc:IsA("UIScale") then
-                        PanelSc.Scale = 0.91
-                    end
-                    TargetInst.Position = UDim2New(0, 0, 0, 40)
+                    TargetInst.Position = UDim2New(0, 0, 0, 14)
                     Page._subtabPanelTween = TweenService:Create(TargetInst, TiSub, {
                         Position = UDim2New(0, 0, 0, 0)
                     })
                     Page._subtabPanelTween:Play()
-                    if PanelSc and PanelSc:IsA("UIScale") then
-                        Page._subtabPanelScaleTween = TweenService:Create(PanelSc, TiSub, { Scale = 1 })
-                        Page._subtabPanelScaleTween:Play()
-                    end
                 else
                     HideAllPanels()
                     TargetInst.Visible = true
                     TargetInst.Position = UDim2New(0, 0, 0, 0)
-                    if PanelSc and PanelSc:IsA("UIScale") then
-                        PanelSc.Scale = 1
-                    end
                 end
             else
                 HideAllPanels()
@@ -4280,15 +4253,9 @@ do
 
         function Page:Turn(Bool)
             local Pg = Items["Page"].Instance
-            local PgSc = Items["PageScale"].Instance
             if Page._tabSwitchTween then
                 Page._tabSwitchTween:Cancel()
                 Page._tabSwitchTween = nil
-                Debounce = false
-            end
-            if Page._tabSwitchScaleTween then
-                Page._tabSwitchScaleTween:Cancel()
-                Page._tabSwitchScaleTween = nil
                 Debounce = false
             end
 
@@ -4299,49 +4266,29 @@ do
             Page.Active = Bool
             Debounce = true
 
-            local TiIn = TweenInfo.new(0.58, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-            local TiOut = TweenInfo.new(0.38, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+            local TiIn = TweenInfo.new(0.36, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            local TiOut = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
 
             if Bool then
                 Pg.Parent = Page.Window.Items["Content"].Instance
                 Pg.Visible = true
-                PgSc.Scale = 0.9
-                Pg.Position = UDim2New(0, 96, 0, 0)
+                Pg.Position = UDim2New(0, 28, 0, 0)
                 Page._tabSwitchTween = TweenService:Create(Pg, TiIn, { Position = UDim2New(0, 0, 0, 0) })
-                Page._tabSwitchScaleTween = TweenService:Create(PgSc, TiIn, { Scale = 1 })
-                local Left = 2
-                local function FinishIn()
-                    Left -= 1
-                    if Left <= 0 then
-                        Page._tabSwitchTween = nil
-                        Page._tabSwitchScaleTween = nil
-                        Debounce = false
-                    end
-                end
-                Page._tabSwitchTween.Completed:Once(FinishIn)
-                Page._tabSwitchScaleTween.Completed:Once(FinishIn)
+                Page._tabSwitchTween.Completed:Once(function()
+                    Page._tabSwitchTween = nil
+                    Debounce = false
+                end)
                 Page._tabSwitchTween:Play()
-                Page._tabSwitchScaleTween:Play()
             else
-                Page._tabSwitchTween = TweenService:Create(Pg, TiOut, { Position = UDim2New(0, -48, 0, 0) })
-                Page._tabSwitchScaleTween = TweenService:Create(PgSc, TiOut, { Scale = 0.94 })
-                local LeftOut = 2
-                local function FinishOut()
-                    LeftOut -= 1
-                    if LeftOut <= 0 then
-                        Pg.Parent = Library.UnusedHolder.Instance
-                        Pg.Position = UDim2New(0, 0, 0, 0)
-                        PgSc.Scale = 1
-                        Pg.Visible = false
-                        Page._tabSwitchTween = nil
-                        Page._tabSwitchScaleTween = nil
-                        Debounce = false
-                    end
-                end
-                Page._tabSwitchTween.Completed:Once(FinishOut)
-                Page._tabSwitchScaleTween.Completed:Once(FinishOut)
+                Page._tabSwitchTween = TweenService:Create(Pg, TiOut, { Position = UDim2New(0, -24, 0, 0) })
+                Page._tabSwitchTween.Completed:Once(function()
+                    Pg.Parent = Library.UnusedHolder.Instance
+                    Pg.Position = UDim2New(0, 0, 0, 0)
+                    Pg.Visible = false
+                    Page._tabSwitchTween = nil
+                    Debounce = false
+                end)
                 Page._tabSwitchTween:Play()
-                Page._tabSwitchScaleTween:Play()
             end
 
             if Page.Active then
@@ -4403,12 +4350,6 @@ do
             ZIndex = 2,
             BorderColor3 = FromRGB(0, 0, 0),
             BackgroundColor3 = FromRGB(255, 255, 255)
-        })
-
-        Instances:Create("UIScale", {
-            Parent = PanelWrap.Instance,
-            Name = "PanelScale",
-            Scale = 1
         })
 
         Sub.Items["Panel"] = PanelWrap
