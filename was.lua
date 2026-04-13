@@ -963,13 +963,13 @@ Library.DefaultPageIcon = "100050851789190"
 Library.PageIconAliases = {
     ["combat"] = "6034684931",
     ["aim"] = "6034684931",
-    ["rage"] = "6034684931",
+    ["rage"] = "6034684930",
     ["legit"] = "6034684931",
     ["visuals"] = "100050851789190",
     ["visual"] = "100050851789190",
     ["esp"] = "100050851789190",
-    ["player"] = "100050851789190",
-    ["users"] = "100050851789190",
+    ["player"] = "6031094669",
+    ["users"] = "6031094669",
     ["misc"] = "6022668898",
     ["other"] = "6022668898",
     ["settings"] = "122669828593160",
@@ -2432,13 +2432,19 @@ do
                 Name = "\0",
                 ImageColor3 = FromRGB(94, 213, 213),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Image = "rbxassetid://"..self.Logo,
+                Image = (self.ShowLogo and self.Logo ~= "") and ("rbxassetid://"..self.Logo) or "",
                 BackgroundTransparency = 1,
-                Size = UDim2New(0, 18, 0, 18),
+                Size = (self.ShowLogo and self.Logo ~= "") and UDim2New(0, 18, 0, 18) or UDim2New(0, 0, 0, 0),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255),
-                ZIndex = 5
+                ZIndex = 5,
+                Visible = self.ShowLogo ~= false
             })  Items["Logo"]:AddToTheme({ImageColor3 = "Accent"})
+
+            if self.ShowLogo == false then
+                Items["Glow"].Instance.Visible = false
+                Items["Glow"].Instance.Size = UDim2New(0, 0, 0, 0)
+            end
 
             Items["Text"] = Instances:Create("TextLabel", {
                 Parent = Items["Watermark"].Instance,
@@ -3559,9 +3565,12 @@ do
     Library.Window = function(self, Data)
         Data = Data or { }
 
+        local LogoOpt = Data.Logo
+        if LogoOpt == nil then LogoOpt = Data.logo end
         local Window = {
             Name = Data.Name or Data.name or "Window",
-            Logo = Data.Logo or Data.logo or "79243957331195",
+            ShowLogo = LogoOpt ~= false,
+            Logo = (LogoOpt ~= false) and (LogoOpt or "79243957331195") or "",
             
             Pages = { },
             Items = { },
@@ -3655,11 +3664,12 @@ do
                 Name = "\0",
                 ImageColor3 = FromRGB(94, 213, 213),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Image = "rbxassetid://"..Window.Logo,
+                Image = Window.ShowLogo and ("rbxassetid://"..Window.Logo) or "",
                 BackgroundTransparency = 1,
-                Size = UDim2New(0, 24, 0, 24),
+                Size = Window.ShowLogo and UDim2New(0, 24, 0, 24) or UDim2New(0, 0, 0, 0),
                 BorderSizePixel = 0,
-                BackgroundColor3 = FromRGB(255, 255, 255)
+                BackgroundColor3 = FromRGB(255, 255, 255),
+                Visible = Window.ShowLogo
             })  Items["Logo"]:AddToTheme({ImageColor3 = "Accent"})
 
             Items["Title"] = Instances:Create("TextLabel", {
@@ -3796,7 +3806,7 @@ do
                 Name = "\0",
                 Rotation = 90,
                 Transparency = NumSequence{NumSequenceKeypoint(0, 0), NumSequenceKeypoint(1, 1)}
-            })
+            })                
             
             Window.Items = Items
         end
@@ -3885,7 +3895,9 @@ do
             _activeStripId = "__main__",
             _lastStripAnimId = nil,
             _tabSwitchTween = nil,
+            _tabSwitchScaleTween = nil,
             _subtabPanelTween = nil,
+            _subtabPanelScaleTween = nil,
             Active = false
         }
 
@@ -3994,7 +4006,7 @@ do
 
             Items["PageScale"] = Instances:Create("UIScale", {
                 Parent = Items["Page"].Instance,
-                Name = "\0",
+                Name = "PageScale",
                 Scale = 1
             })
 
@@ -4095,6 +4107,10 @@ do
                 Page._subtabPanelTween:Cancel()
                 Page._subtabPanelTween = nil
             end
+            if Page._subtabPanelScaleTween then
+                Page._subtabPanelScaleTween:Cancel()
+                Page._subtabPanelScaleTween = nil
+            end
 
             local function HideAllPanels()
                 MainInst.Visible = false
@@ -4103,22 +4119,39 @@ do
                     local P = Sub.Items["Panel"].Instance
                     P.Visible = false
                     P.Position = UDim2New(0, 0, 0, 0)
+                    local Ps = P:FindFirstChild("PanelScale")
+                    if Ps and Ps:IsA("UIScale") then
+                        Ps.Scale = 1
+                    end
                 end
             end
 
+            local TiSub = TweenInfo.new(0.52, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+
             if TargetInst then
+                local PanelSc = TargetInst:FindFirstChild("PanelScale")
                 if ShouldAnimate then
                     HideAllPanels()
                     TargetInst.Visible = true
-                    TargetInst.Position = UDim2New(0, 0, 0, 18)
-                    Page._subtabPanelTween = TweenService:Create(TargetInst, TweenInfo.new(0.34, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+                    if PanelSc and PanelSc:IsA("UIScale") then
+                        PanelSc.Scale = 0.91
+                    end
+                    TargetInst.Position = UDim2New(0, 0, 0, 40)
+                    Page._subtabPanelTween = TweenService:Create(TargetInst, TiSub, {
                         Position = UDim2New(0, 0, 0, 0)
                     })
                     Page._subtabPanelTween:Play()
+                    if PanelSc and PanelSc:IsA("UIScale") then
+                        Page._subtabPanelScaleTween = TweenService:Create(PanelSc, TiSub, { Scale = 1 })
+                        Page._subtabPanelScaleTween:Play()
+                    end
                 else
                     HideAllPanels()
                     TargetInst.Visible = true
                     TargetInst.Position = UDim2New(0, 0, 0, 0)
+                    if PanelSc and PanelSc:IsA("UIScale") then
+                        PanelSc.Scale = 1
+                    end
                 end
             else
                 HideAllPanels()
@@ -4129,10 +4162,7 @@ do
             for StripId, Row in Page._stripButtons do
                 local On = (StripId == Id)
                 Row.Accent.Instance.BackgroundTransparency = On and 0 or 1
-                Row.Icon:Tween(nil, {
-                    ImageColor3 = On and Library.Theme.Accent or Library.Theme["Inactive Text"],
-                    Size = On and UDim2New(0, 20, 0, 20) or UDim2New(0, 17, 0, 17)
-                })
+                Row.Icon:Tween(nil, {ImageColor3 = On and Library.Theme.Accent or Library.Theme["Inactive Text"]})
                 Row.Text:Tween(nil, {TextTransparency = On and 0.05 or 0.38})
                 Row.Button:Tween(nil, {BackgroundTransparency = On and 0.52 or 0.88})
             end
@@ -4250,10 +4280,15 @@ do
 
         function Page:Turn(Bool)
             local Pg = Items["Page"].Instance
-            local Psc = Items["PageScale"].Instance
+            local PgSc = Items["PageScale"].Instance
             if Page._tabSwitchTween then
                 Page._tabSwitchTween:Cancel()
                 Page._tabSwitchTween = nil
+                Debounce = false
+            end
+            if Page._tabSwitchScaleTween then
+                Page._tabSwitchScaleTween:Cancel()
+                Page._tabSwitchScaleTween = nil
                 Debounce = false
             end
 
@@ -4264,46 +4299,61 @@ do
             Page.Active = Bool
             Debounce = true
 
-            local SlideIn = TweenInfo.new(0.34, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-            local SlideOut = TweenInfo.new(0.24, Enum.EasingStyle.Cubic, Enum.EasingDirection.In)
+            local TiIn = TweenInfo.new(0.58, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+            local TiOut = TweenInfo.new(0.38, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
 
             if Bool then
                 Pg.Parent = Page.Window.Items["Content"].Instance
                 Pg.Visible = true
-                Pg.Position = UDim2New(0, 28, 0, 10)
-                Psc.Scale = 0.97
-                TweenService:Create(Psc, SlideIn, { Scale = 1 }):Play()
-                Page._tabSwitchTween = TweenService:Create(Pg, SlideIn, { Position = UDim2New(0, 0, 0, 0) })
-                Page._tabSwitchTween.Completed:Once(function()
-                    Page._tabSwitchTween = nil
-                    Psc.Scale = 1
-                    Debounce = false
-                end)
+                PgSc.Scale = 0.9
+                Pg.Position = UDim2New(0, 96, 0, 0)
+                Page._tabSwitchTween = TweenService:Create(Pg, TiIn, { Position = UDim2New(0, 0, 0, 0) })
+                Page._tabSwitchScaleTween = TweenService:Create(PgSc, TiIn, { Scale = 1 })
+                local Left = 2
+                local function FinishIn()
+                    Left -= 1
+                    if Left <= 0 then
+                        Page._tabSwitchTween = nil
+                        Page._tabSwitchScaleTween = nil
+                        Debounce = false
+                    end
+                end
+                Page._tabSwitchTween.Completed:Once(FinishIn)
+                Page._tabSwitchScaleTween.Completed:Once(FinishIn)
                 Page._tabSwitchTween:Play()
+                Page._tabSwitchScaleTween:Play()
             else
-                TweenService:Create(Psc, SlideOut, { Scale = 0.98 }):Play()
-                Page._tabSwitchTween = TweenService:Create(Pg, SlideOut, { Position = UDim2New(0, -22, 0, -6) })
-                Page._tabSwitchTween.Completed:Once(function()
-                    Pg.Parent = Library.UnusedHolder.Instance
-                    Pg.Position = UDim2New(0, 0, 0, 0)
-                    Pg.Visible = false
-                    Psc.Scale = 1
-                    Page._tabSwitchTween = nil
-                    Debounce = false
-                end)
+                Page._tabSwitchTween = TweenService:Create(Pg, TiOut, { Position = UDim2New(0, -48, 0, 0) })
+                Page._tabSwitchScaleTween = TweenService:Create(PgSc, TiOut, { Scale = 0.94 })
+                local LeftOut = 2
+                local function FinishOut()
+                    LeftOut -= 1
+                    if LeftOut <= 0 then
+                        Pg.Parent = Library.UnusedHolder.Instance
+                        Pg.Position = UDim2New(0, 0, 0, 0)
+                        PgSc.Scale = 1
+                        Pg.Visible = false
+                        Page._tabSwitchTween = nil
+                        Page._tabSwitchScaleTween = nil
+                        Debounce = false
+                    end
+                end
+                Page._tabSwitchTween.Completed:Once(FinishOut)
+                Page._tabSwitchScaleTween.Completed:Once(FinishOut)
                 Page._tabSwitchTween:Play()
+                Page._tabSwitchScaleTween:Play()
             end
 
             if Page.Active then
                 Items["Text"]:Tween(nil, {TextTransparency = 0.05})
                 Items["Inactive"]:Tween(nil, {BackgroundTransparency = 0.62})
                 Items["AccentBar"]:Tween(nil, {BackgroundTransparency = 0})
-                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent, Size = UDim2New(0, 30, 0, 30)})
+                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
             else
                 Items["Text"]:Tween(nil, {TextTransparency = 0.35})
                 Items["Inactive"]:Tween(nil, {BackgroundTransparency = 0.92})
                 Items["AccentBar"]:Tween(nil, {BackgroundTransparency = 1})
-                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme["Inactive Text"], Size = UDim2New(0, 26, 0, 26)})
+                Items["Icon"]:Tween(nil, {ImageColor3 = Library.Theme["Inactive Text"]})
             end
         end
 
@@ -4312,6 +4362,7 @@ do
                 if Value == Page and Page.Active then
                     return
                 end
+
                 Value:Turn(Value == Page)
             end
         end)
@@ -4352,6 +4403,12 @@ do
             ZIndex = 2,
             BorderColor3 = FromRGB(0, 0, 0),
             BackgroundColor3 = FromRGB(255, 255, 255)
+        })
+
+        Instances:Create("UIScale", {
+            Parent = PanelWrap.Instance,
+            Name = "PanelScale",
+            Scale = 1
         })
 
         Sub.Items["Panel"] = PanelWrap
