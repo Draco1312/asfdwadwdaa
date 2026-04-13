@@ -3797,194 +3797,11 @@ do
                 Rotation = 90,
                 Transparency = NumSequence{NumSequenceKeypoint(0, 0), NumSequenceKeypoint(1, 1)}
             })
-
-            Items["TabLoadOverlay"] = Instances:Create("Frame", {
-                Parent = Items["Content"].Instance,
-                Name = "\0",
-                BackgroundTransparency = 1,
-                BorderSizePixel = 0,
-                Size = UDim2New(1, 0, 1, 0),
-                Visible = false,
-                ZIndex = 100,
-                Active = true,
-                BorderColor3 = FromRGB(0, 0, 0),
-                BackgroundColor3 = FromRGB(0, 0, 0),
-            })
-
-            Items["TabLoadDim"] = Instances:Create("Frame", {
-                Parent = Items["TabLoadOverlay"].Instance,
-                Name = "\0",
-                BackgroundColor3 = FromRGB(6, 8, 14),
-                BackgroundTransparency = 1,
-                BorderSizePixel = 0,
-                Size = UDim2New(1, 0, 1, 0),
-                ZIndex = 1,
-            })
-
-            Items["TabLoadCard"] = Instances:Create("Frame", {
-                Parent = Items["TabLoadOverlay"].Instance,
-                Name = "\0",
-                AnchorPoint = Vector2New(0.5, 0.5),
-                Position = UDim2New(0.5, 0, 0.5, 0),
-                Size = UDim2New(0, 272, 0, 132),
-                BackgroundColor3 = FromRGB(18, 22, 30),
-                BackgroundTransparency = 1,
-                BorderSizePixel = 0,
-                ZIndex = 3,
-            })
-            Instances:Create("UICorner", {
-                Parent = Items["TabLoadCard"].Instance,
-                Name = "\0",
-                CornerRadius = UDim.new(0, 16)
-            })
-            Instances:Create("UIStroke", {
-                Parent = Items["TabLoadCard"].Instance,
-                Name = "\0",
-                Thickness = 1.2,
-                Transparency = 0.25,
-                Color = FromRGB(94, 213, 213),
-                LineJoinMode = Enum.LineJoinMode.Round,
-                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            }):AddToTheme({Color = "Accent"})
-
-            Items["TabLoadCardScale"] = Instances:Create("UIScale", {
-                Parent = Items["TabLoadCard"].Instance,
-                Name = "\0",
-                Scale = 0.78
-            })
-
-            Items["TabLoadStack"] = Instances:Create("Frame", {
-                Parent = Items["TabLoadCard"].Instance,
-                Name = "\0",
-                BackgroundTransparency = 1,
-                Size = UDim2New(1, 0, 1, 0),
-                ZIndex = 4,
-                BorderSizePixel = 0,
-            })
-            Instances:Create("UIListLayout", {
-                Parent = Items["TabLoadStack"].Instance,
-                Name = "\0",
-                FillDirection = Enum.FillDirection.Vertical,
-                HorizontalAlignment = Enum.HorizontalAlignment.Center,
-                VerticalAlignment = Enum.VerticalAlignment.Center,
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDimNew(0, 12)
-            })
-
-            Items["TabLoadSpinner"] = Instances:Create("ImageLabel", {
-                Parent = Items["TabLoadStack"].Instance,
-                Name = "\0",
-                BackgroundTransparency = 1,
-                Image = "rbxassetid://3605526624",
-                ImageColor3 = FromRGB(94, 213, 213),
-                ImageTransparency = 1,
-                ScaleType = Enum.ScaleType.Fit,
-                Size = UDim2New(0, 58, 0, 58),
-                LayoutOrder = 1,
-                ZIndex = 5,
-                BorderSizePixel = 0,
-            })  Items["TabLoadSpinner"]:AddToTheme({ImageColor3 = "Accent"})
-
-            Items["TabLoadLabel"] = Instances:Create("TextLabel", {
-                Parent = Items["TabLoadStack"].Instance,
-                Name = "\0",
-                FontFace = Library.Font,
-                Text = "Loading.",
-                TextColor3 = FromRGB(236, 242, 255),
-                TextTransparency = 1,
-                TextSize = 18,
-                BackgroundTransparency = 1,
-                Size = UDim2New(1, -16, 0, 26),
-                LayoutOrder = 2,
-                ZIndex = 5,
-                BorderSizePixel = 0,
-            })  Items["TabLoadLabel"]:AddToTheme({TextColor3 = "Text"})
-            Instances:Create("UIStroke", {
-                Parent = Items["TabLoadLabel"].Instance,
-                Name = "\0",
-                Thickness = 1,
-                Transparency = 0.55,
-                Color = FromRGB(94, 213, 213),
-            }):AddToTheme({Color = "Accent"})
             
             Window.Items = Items
-            Window._tabSwitchBusy = false
-            Window._tabLoadSpinConn = nil
-            Window._tabLoadDotsToken = 0
         end
 
         local Debounce = false
-
-        function Window:_StopTabLoadSpin()
-            if Window._tabLoadSpinConn then
-                Window._tabLoadSpinConn:Disconnect()
-                Window._tabLoadSpinConn = nil
-            end
-        end
-
-        function Window:PlayTabLoadThen(runSwitch)
-            if Window._tabSwitchBusy then
-                return
-            end
-            Window._tabSwitchBusy = true
-            local WItems = Window.Items
-            local Ov = WItems["TabLoadOverlay"].Instance
-            local Dim = WItems["TabLoadDim"].Instance
-            local Card = WItems["TabLoadCard"].Instance
-            local CardScale = WItems["TabLoadCardScale"].Instance
-            local SpR = WItems["TabLoadSpinner"].Instance
-            local Lb = WItems["TabLoadLabel"].Instance
-
-            Window._tabLoadDotsToken = Window._tabLoadDotsToken + 1
-            local dotTok = Window._tabLoadDotsToken
-
-            Ov.Visible = true
-            Dim.BackgroundTransparency = 1
-            Card.BackgroundTransparency = 1
-            CardScale.Scale = 0.76
-            Lb.TextTransparency = 1
-            SpR.Rotation = 0
-            SpR.ImageTransparency = 1
-
-            TweenService:Create(Dim, TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { BackgroundTransparency = 0.5 }):Play()
-            TweenService:Create(Card, TweenInfo.new(0.42, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), { BackgroundTransparency = 0.06 }):Play()
-            TweenService:Create(CardScale, TweenInfo.new(0.58, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-            TweenService:Create(Lb, TweenInfo.new(0.34, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { TextTransparency = 0.02 }):Play()
-            TweenService:Create(SpR, TweenInfo.new(0.32, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { ImageTransparency = 0 }):Play()
-
-            Window._tabLoadSpinConn = RunService.RenderStepped:Connect(function(dt)
-                SpR.Rotation = SpR.Rotation + dt * 560
-            end)
-
-            task.spawn(function()
-                local phase = 0
-                while dotTok == Window._tabLoadDotsToken and Ov.Visible do
-                    phase = phase + 1
-                    local n = (phase % 3) + 1
-                    if Lb.Parent then
-                        Lb.Text = "Loading" .. string.rep(".", n)
-                    end
-                    task.wait(0.28)
-                end
-            end)
-
-            task.delay(1.45, function()
-                Window:_StopTabLoadSpin()
-                Window._tabLoadDotsToken = Window._tabLoadDotsToken + 1
-                runSwitch()
-
-                TweenService:Create(SpR, TweenInfo.new(0.22, Enum.EasingStyle.Quart, Enum.EasingDirection.In), { ImageTransparency = 1 }):Play()
-                TweenService:Create(Lb, TweenInfo.new(0.22), { TextTransparency = 1 }):Play()
-                TweenService:Create(Card, TweenInfo.new(0.28, Enum.EasingStyle.Quart, Enum.EasingDirection.In), { BackgroundTransparency = 1 }):Play()
-                TweenService:Create(CardScale, TweenInfo.new(0.26, Enum.EasingStyle.Back, Enum.EasingDirection.In), { Scale = 0.88 }):Play()
-                TweenService:Create(Dim, TweenInfo.new(0.32, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { BackgroundTransparency = 1 }):Play()
-                task.delay(0.32, function()
-                    Ov.Visible = false
-                    CardScale.Scale = 0.76
-                    Window._tabSwitchBusy = false
-                end)
-            end)
-        end
 
         function Window:SetCenter()
             local CenterPosition = Items["MainFrame"].Instance.AbsolutePosition
@@ -4175,6 +3992,12 @@ do
                 ClipsDescendants = true
             })
 
+            Items["PageScale"] = Instances:Create("UIScale", {
+                Parent = Items["Page"].Instance,
+                Name = "\0",
+                Scale = 1
+            })
+
             Items["SubtabStrip"] = Instances:Create("Frame", {
                 Parent = Items["Page"].Instance,
                 Name = "\0",
@@ -4287,8 +4110,8 @@ do
                 if ShouldAnimate then
                     HideAllPanels()
                     TargetInst.Visible = true
-                    TargetInst.Position = UDim2New(0, 0, 0, 44)
-                    Page._subtabPanelTween = TweenService:Create(TargetInst, TweenInfo.new(0.52, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
+                    TargetInst.Position = UDim2New(0, 0, 0, 18)
+                    Page._subtabPanelTween = TweenService:Create(TargetInst, TweenInfo.new(0.34, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
                         Position = UDim2New(0, 0, 0, 0)
                     })
                     Page._subtabPanelTween:Play()
@@ -4427,6 +4250,7 @@ do
 
         function Page:Turn(Bool)
             local Pg = Items["Page"].Instance
+            local Psc = Items["PageScale"].Instance
             if Page._tabSwitchTween then
                 Page._tabSwitchTween:Cancel()
                 Page._tabSwitchTween = nil
@@ -4440,25 +4264,30 @@ do
             Page.Active = Bool
             Debounce = true
 
-            local SlideIn = TweenInfo.new(0.58, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
-            local SlideOut = TweenInfo.new(0.36, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+            local SlideIn = TweenInfo.new(0.34, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            local SlideOut = TweenInfo.new(0.24, Enum.EasingStyle.Cubic, Enum.EasingDirection.In)
 
             if Bool then
                 Pg.Parent = Page.Window.Items["Content"].Instance
                 Pg.Visible = true
-                Pg.Position = UDim2New(0, 72, 0, 26)
+                Pg.Position = UDim2New(0, 28, 0, 10)
+                Psc.Scale = 0.97
+                TweenService:Create(Psc, SlideIn, { Scale = 1 }):Play()
                 Page._tabSwitchTween = TweenService:Create(Pg, SlideIn, { Position = UDim2New(0, 0, 0, 0) })
                 Page._tabSwitchTween.Completed:Once(function()
                     Page._tabSwitchTween = nil
+                    Psc.Scale = 1
                     Debounce = false
                 end)
                 Page._tabSwitchTween:Play()
             else
-                Page._tabSwitchTween = TweenService:Create(Pg, SlideOut, { Position = UDim2New(0, -64, 0, -20) })
+                TweenService:Create(Psc, SlideOut, { Scale = 0.98 }):Play()
+                Page._tabSwitchTween = TweenService:Create(Pg, SlideOut, { Position = UDim2New(0, -22, 0, -6) })
                 Page._tabSwitchTween.Completed:Once(function()
                     Pg.Parent = Library.UnusedHolder.Instance
                     Pg.Position = UDim2New(0, 0, 0, 0)
                     Pg.Visible = false
+                    Psc.Scale = 1
                     Page._tabSwitchTween = nil
                     Debounce = false
                 end)
@@ -4479,19 +4308,12 @@ do
         end
 
         Items["Inactive"]:Connect("MouseButton1Down", function()
-            if Page.Window._tabSwitchBusy then
-                return
-            end
             for Index, Value in Page.Window.Pages do
                 if Value == Page and Page.Active then
                     return
                 end
+                Value:Turn(Value == Page)
             end
-            Page.Window:PlayTabLoadThen(function()
-                for Index, Value in Page.Window.Pages do
-                    Value:Turn(Value == Page)
-                end
-            end)
         end)
 
         if #Page.Window.Pages == 0 then
