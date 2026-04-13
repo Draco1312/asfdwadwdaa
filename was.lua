@@ -3575,7 +3575,7 @@ do
                 AnchorPoint = Vector2New(0.5, 0.5),
                 Position = UDim2New(0.5, 0, 0.5, 0),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(0, 880, 0, 708),
+                Size = UDim2New(0, 720, 0, 560),
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(17, 21, 27)
             })  Items["MainFrame"]:AddToTheme({BackgroundColor3 = "Background 1"})
@@ -3586,7 +3586,7 @@ do
             })
 
             Items["MainFrame"]:MakeDraggable()
-            Items["MainFrame"]:MakeResizeable(Vector2New(880, 708), Vector2New(9999, 9999))
+            Items["MainFrame"]:MakeResizeable(Vector2New(720, 560), Vector2New(9999, 9999))
             
             Items["UIStroke"] = Instances:Create("UIStroke", {
                 Parent = Items["MainFrame"].Instance,
@@ -3693,7 +3693,7 @@ do
                 BackgroundColor3 = FromRGB(18, 21, 32),
                 BorderSizePixel = 0,
                 Position = UDim2New(0, 0, 0, 0),
-                Size = UDim2New(0, 252, 1, 0),
+                Size = UDim2New(0, 210, 1, 0),
                 ZIndex = 2,
                 BorderColor3 = FromRGB(0, 0, 0)
             })  Items["Sidebar"]:AddToTheme({BackgroundColor3 = "Background 2"})
@@ -3750,9 +3750,9 @@ do
                 Name = "\0",
                 BorderColor3 = FromRGB(0, 0, 0),
                 BackgroundTransparency = 1,
-                Position = UDim2New(0, 266, 0, 0),
+                Position = UDim2New(0, 224, 0, 0),
                 ClipsDescendants = true,
-                Size = UDim2New(1, -278, 1, 0),
+                Size = UDim2New(1, -236, 1, 0),
                 ZIndex = 2,
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
@@ -4235,7 +4235,6 @@ do
             end
             Page._subtabStripReady = true
             Page:_LayoutSubtabStrip()
-            Page:_AddStripButton("__main__", "Overview", Library.DefaultPageIcon)
         end
 
         local Debounce = false
@@ -4345,6 +4344,9 @@ do
         Sub.ColumnsData = BuildPageColumns(PanelWrap.Instance, Sub.Columns)
 
         local SubIcon = Library:ResolvePageIcon(SubName, Data.Icon or Data.icon)
+        if #Page.Subtabs == 0 then
+            Page._activeStripId = Sub.PanelId
+        end
         Page:_AddStripButton(Sub.PanelId, SubName, SubIcon)
 
         TableInsert(Page.Subtabs, Sub)
